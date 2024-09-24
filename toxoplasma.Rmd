@@ -1,14 +1,17 @@
 ---
-title: "toxo"
+title: "toxoplasma_japan"
 author: "Ko"
 date: "2024-09-22"
-output: html_document
+output: rmarkdown::github_document
 ---
-# prefectures with data of seroprevalence (All, Hokkaido, Saitama, Chiba, Tokyo, Osaka, Hyogo, Yamaguchi, Nagasaki, Miyazaki)
-# data processing
-# number of new pregnancies at calendar month
 
-```{r}
+## R markdown
+
+This is an R Markdown document on toxoplasmosis in Japan.
+
+## Data processing
+
+```{r data loading}
 rm(list=ls(all=TRUE))
 library(tidyverse)
 library(rstan)
@@ -40,9 +43,9 @@ df2$Miyazaki <- (1-0.1)*df2$Miyazaki
 dose1 <- subset(dose1, select = -c(X, Yamaguchi))
 ```
 
-# run stan modeling
+## run stan modeling
 
-```{r}
+```{r fitting to data}
 
 data <- list(T=57, K=9, Sus=df2, N=4, Dos=log(dose1), prop= c((0.468+0.478)/2, (0.828+0.822)/2, (0.516+0.483)/2, (0.555+0.755)/2, (0.539+0.550)/2, (0.33+0.292)/2, (0.623+0.689)/2, (0.603+0.644)/2, (0.644+0.729)/2)) # using average of testing rates in 2019 and 2021; excluding Yamaguchi
 
@@ -80,8 +83,9 @@ fit3 <- sampling(
 ms3 <- rstan::extract(fit3)
 ```
 
-Data frame for figures
-```{r}
+## Statistics for parameters
+
+```{r main statistics for estimated parameters}
 # Create a function to calculate the desired quantile
 calculate_quantiles <- function(column) {
   quantile(column, probs = c(0.025, 0.5, 0.975))
@@ -135,8 +139,9 @@ quantiles
 quantile(ms3$sigma, probs = c(0.025, 0.5, 0.975))
 ```
 
-Figure for doses
-```{r}
+## Figure 1 (observed and estimated doses)
+
+```{r plot for figure1}
 ## df for doses
 dose2 <- read.csv("spiramycin.csv")
 dose2 <- subset(dose2, select = -c(Yamaguchi))
@@ -261,8 +266,9 @@ p1
 
 ```
 
-Figure for infected
-```{r}
+## Figure 2 (cumulative incidence in pregnant women)
+
+```{r plot for figure 2}
 
 # all
 i2019 <- quantile(x=ms$infected_2019[,1], probs = c(0.025, 0.5, 0.975))
@@ -476,7 +482,7 @@ p2+p3
 
 ```
 
-Treated proportion
+## Treated proportion
 
 ```{r}
 ## df for treated proportion (Base)
@@ -571,9 +577,9 @@ to2021 <- quantile(x=ms3$treated_2021[,1], probs = c(0.025, 0.5, 0.975))
 
 ```
 
-Figure for vertical transmission
+## Figure 3 (cumulative CT)
 
-```{r}
+```{r plot for figure 3}
 # df for vertical
 # all
 v2019 <- quantile(x=ms$vertical_2019[,1], probs = c(0.025, 0.5, 0.975))
@@ -783,31 +789,3 @@ p4+p5
 ```
 
 
-
-```{r}
-
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
