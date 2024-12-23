@@ -1,0 +1,145 @@
+---
+title: "toxoplasma_japan: sensitivity analysis"
+author: "Ko"
+date: "2024-11-28"
+output: rmarkdown::github_document
+---
+
+## R markdown
+
+This is an R Markdown document on toxoplasmosis in Japan.
+
+## Data processing
+
+```{r data loading}
+rm(list=ls(all=TRUE))
+library(tidyverse)
+library(rstan)
+
+preg <- read.csv("pregnancy_report.csv") # monthly pregnancy report from Jan 2018 to Oct 2021, corresponding to monthly pregnancy from Nov 2017 to Aug 2021
+offspr <- read.csv("offsprings.csv") # monthly offspring report from Jun 2022 to Dec 2022, corresponding to monthly pregnancy from  Sep 2021 to Mar 2022
+offspr2 <- read.csv("offsprings2.csv") # monthly offspring report from Apr 2018 to Jul 2018, corresponding to monthly pregnancy from Jul 2017 to Oct 2017
+dose1 <- read.csv("spiramycin.csv")
+
+# Generate a sequence of months from Jul 2017 to March 2022
+months <- seq(as.Date("2017-07-01"), as.Date("2022-03-01"), by = "month")
+
+# Generate a vector of new monthly pregnancies 
+df1 <- rbind(offspr2, preg, offspr)
+df1$X <- months
+
+df2 <- subset(df1, select = c(Tokyo, Hyogo)) 
+dose1 <- subset(dose1, select = c(Tokyo, Hyogo))
+```
+
+## run stan modeling
+
+```{r fitting to data}
+
+data <- list(T=57, K=2, Preg=df2, N=4, Dos=log(dose1), prop= c((0.539+0.550)/2, (0.623+0.689)/2), prev = c(0.06, 0.035)) 
+
+stanmodel <- stan_model(file = 'sensitivity.stan') # model caring for false positive
+
+fit <- sampling(
+  stanmodel,
+  data=data,
+  seed = 1234,
+  chains=4, iter=2000, warmup=500, thin=1
+)
+
+ms <- rstan::extract(fit)
+
+```
+
+## Statistics for parameters
+
+```{r main statistics for estimated parameters}
+# Create a function to calculate the desired quantile
+calculate_quantiles <- function(column) {
+  quantile(column, probs = c(0.025, 0.5, 0.975))
+}
+
+# List of columns to calculate quantiles (base scenario)
+columns <- list(ms$foi[,1], ms$foi[,2])
+# Apply the function to each column and store the results
+quantiles <- lapply(columns, calculate_quantiles)
+# Print the results
+quantiles
+
+
+
+
+
+
+```
+
+## cumulative incidence in pregnant women
+
+```{r plot for figure 2}
+# Tokyo
+i2019tk <- quantile(x=ms$infected_2019[,1], probs = c(0.025, 0.5, 0.975))
+i2020tk <- quantile(x=ms$infected_2020[,1], probs = c(0.025, 0.5, 0.975))
+i2021tk <- quantile(x=ms$infected_2021[,1], probs = c(0.025, 0.5, 0.975))
+# Hyogo
+i2019hg <- quantile(x=ms$infected_2019[,2], probs = c(0.025, 0.5, 0.975))
+i2020hg <- quantile(x=ms$infected_2020[,2], probs = c(0.025, 0.5, 0.975))
+i2021hg <- quantile(x=ms$infected_2021[,2], probs = c(0.025, 0.5, 0.975))
+
+df_infected <- tibble(
+  X = rep(c("2019", "2020", "2021"),2),
+  prefecture =c(rep("Tokyo", 3), rep("Hyogo", 3)),
+  "50%" = c(i2019tk[2], i2020tk[2], i2021tk[2], i2019hg[2], i2020hg[2], i2021hg[2]),
+  "2.5%" = c(i2019tk[1], i2020tk[1], i2021tk[1], i2019hg[1], i2020hg[1], i2021hg[1]),
+  "97.5%" = c(i2019tk[3], i2020tk[3], i2021tk[3], i2019hg[3], i2020hg[3], i2021hg[3])
+)
+
+#df for infection per 10000 pregnancies
+df_infected_pregnancy <- tibble(
+  X = rep(c("2019", "2020", "2021"),2),
+  prefecture =c(rep("Tokyo", 3), rep("Hyogo", 3)),
+  "50%" = 10000*c(i2019tk[2]/sum(df1$Tokyo[19:30]), i2020tk[2]/sum(df1$Tokyo[31:42]), i2021tk[2]/sum(df1$Tokyo[43:54]), i2019hg[2]/sum(df1$Hyogo[19:30]), i2020hg[2]/sum(df1$Hyogo[31:42]), i2021hg[2]/sum(df1$Hyogo[43:54])),
+  "2.5%" = 10000*c(i2019tk[1]/sum(df1$Tokyo[19:30]), i2020tk[1]/sum(df1$Tokyo[31:42]), i2021tk[1]/sum(df1$Tokyo[43:54]), i2019hg[1]/sum(df1$Hyogo[19:30]), i2020hg[1]/sum(df1$Hyogo[31:42]), i2021hg[1]/sum(df1$Hyogo[43:54])),
+  "97.5%" = 10000*c(i2019tk[3]/sum(df1$Tokyo[19:30]), i2020tk[3]/sum(df1$Tokyo[31:42]), i2021tk[3]/sum(df1$Tokyo[43:54]),  i2019hg[3]/sum(df1$Hyogo[19:30]), i2020hg[3]/sum(df1$Hyogo[31:42]), i2021hg[3]/sum(df1$Hyogo[43:54]))
+)
+
+
+
+
+
+
+```
+
+
+## cumulative CT
+
+```{r plot for figure 3}
+# df for vertical
+# Tokyo
+v2019tk <- quantile(x=ms$vertical_2019[,1], probs = c(0.025, 0.5, 0.975))
+v2020tk <- quantile(x=ms$vertical_2020[,1], probs = c(0.025, 0.5, 0.975))
+v2021tk <- quantile(x=ms$vertical_2021[,1], probs = c(0.025, 0.5, 0.975))
+# Hyogo
+v2019hg <- quantile(x=ms$vertical_2019[,2], probs = c(0.025, 0.5, 0.975))
+v2020hg <- quantile(x=ms$vertical_2020[,2], probs = c(0.025, 0.5, 0.975))
+v2021hg <- quantile(x=ms$vertical_2021[,2], probs = c(0.025, 0.5, 0.975))
+
+df_vertical <- tibble(
+  X = rep(c("2019", "2020", "2021"),2),
+  prefecture =c( rep("Tokyo", 3), rep("Hyogo", 3)),
+  "50%" = c( v2019tk[2], v2020tk[2], v2021tk[2],  v2019hg[2], v2020hg[2], v2021hg[2]),
+  "2.5%" = c( v2019tk[1], v2020tk[1], v2021tk[1], v2019hg[1], v2020hg[1], v2021hg[1]),
+  "97.5%" = c( v2019tk[3], v2020tk[3], v2021tk[3],  v2019hg[3], v2020hg[3], v2021hg[3])
+)
+
+# df for vertical transmission per 10000 pregnancies
+df_vertical_pregnancy <- tibble(
+  X = rep(c("2019", "2020", "2021"),2),
+  prefecture =c( rep("Tokyo", 3),  rep("Hyogo", 3)),
+  "50%" = 10000*c( v2019tk[2]/sum(df1$Tokyo[19:30]), v2020tk[2]/sum(df1$Tokyo[31:42]), v2021tk[2]/sum(df1$Tokyo[43:54]),  v2019hg[2]/sum(df1$Hyogo[19:30]), v2020hg[2]/sum(df1$Hyogo[31:42]), v2021hg[2]/sum(df1$Hyogo[43:54])),
+  "2.5%" = 10000*c( v2019tk[1]/sum(df1$Tokyo[19:30]), v2020tk[1]/sum(df1$Tokyo[31:42]), v2021tk[1]/sum(df1$Tokyo[43:54]), v2019hg[1]/sum(df1$Hyogo[19:30]), v2020hg[1]/sum(df1$Hyogo[31:42]), v2021hg[1]/sum(df1$Hyogo[43:54])),
+  "97.5%" = 10000*c( v2019tk[3]/sum(df1$Tokyo[19:30]), v2020tk[3]/sum(df1$Tokyo[31:42]), v2021tk[3]/sum(df1$Tokyo[43:54]),  v2019hg[3]/sum(df1$Hyogo[19:30]), v2020hg[3]/sum(df1$Hyogo[31:42]), v2021hg[3]/sum(df1$Hyogo[43:54]))
+)
+
+```
+
+
