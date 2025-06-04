@@ -5,8 +5,8 @@ presented in “Toxoplasma gondii infection risk among pregnant people and conge
 
 The raw data is located in the folder “data”:
 
--   `Data_seroprevalence.csv` (data from reports on seropositivity)
--   `data_under5.txt` (pre-F data of individuals &lt; 5 years)
+-   `offsprings.csv` (data from reports on seropositivity)
+-   `offsprings2.csv` (pre-F data of individuals &lt; 5 years)
 -   `data_over5.txt` (pre-F data of groups &gt; 5 years)
 -   `cleanedData.R` (scripts used to clean the data)
 -   `cleanedData.RDS` (cleaned data)
