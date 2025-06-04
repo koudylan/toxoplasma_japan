@@ -5,11 +5,10 @@ presented in “Toxoplasma gondii infection risk among pregnant people and conge
 
 The raw data is located in the folder “data”:
 
--   `offsprings.csv` (data from reports on seropositivity)
--   `offsprings2.csv` (pre-F data of individuals &lt; 5 years)
--   `data_over5.txt` (pre-F data of groups &gt; 5 years)
--   `cleanedData.R` (scripts used to clean the data)
--   `cleanedData.RDS` (cleaned data)
+-   `offsprings.csv` (monthly offspring report from Jun 2022 to Dec 2022)
+-   `offsprings2.csv` (monthly offspring report from Apr 2018 to Jul 2018)
+-   `pregnancy_report.csv` (monthly pregnancy report from Jan 2018 to Oct 2021)
+-   `spiramycin.csv` (prescribed number of spiramycin doses per fiscal year from 2018 to 2021)
 
 The main scripts are located in the folder “main”:
 
