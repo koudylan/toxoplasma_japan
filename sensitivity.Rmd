@@ -11,7 +11,7 @@ This is an R Markdown document on toxoplasmosis in Japan.
 
 ## Data processing
 
-```{r data loading}
+```{r data loading, message=FALSE, warning=FALSE, error=FALSE}
 rm(list=ls(all=TRUE))
 library(tidyverse)
 library(rstan)
@@ -34,7 +34,7 @@ dose1 <- subset(dose1, select = c(Tokyo, Hyogo))
 
 ## run stan modeling
 
-```{r fitting to data}
+```{r fitting to data, message=FALSE, warning=FALSE, error=FALSE}
 
 data <- list(T=57, K=2, Preg=df2, N=4, Dos=log(dose1), prop= c((0.539+0.550)/2, (0.623+0.689)/2), prev = c(0.06, 0.035)) 
 
@@ -53,7 +53,7 @@ ms <- rstan::extract(fit)
 
 ## Statistics for parameters
 
-```{r main statistics for estimated parameters}
+```{r main statistics for estimated parameters, message=FALSE, warning=FALSE, error=FALSE}
 # Create a function to calculate the desired quantile
 calculate_quantiles <- function(column) {
   quantile(column, probs = c(0.025, 0.5, 0.975))
@@ -75,7 +75,7 @@ quantiles
 
 ## cumulative incidence in pregnant women
 
-```{r plot for figure 2}
+```{r, message=FALSE, warning=FALSE, error=FALSE}
 # Tokyo
 i2019tk <- quantile(x=ms$infected_2019[,1], probs = c(0.025, 0.5, 0.975))
 i2020tk <- quantile(x=ms$infected_2020[,1], probs = c(0.025, 0.5, 0.975))
@@ -112,7 +112,7 @@ df_infected_pregnancy <- tibble(
 
 ## cumulative CT
 
-```{r plot for figure 3}
+```{r, message=FALSE, warning=FALSE, error=FALSE}
 # df for vertical
 # Tokyo
 v2019tk <- quantile(x=ms$vertical_2019[,1], probs = c(0.025, 0.5, 0.975))
