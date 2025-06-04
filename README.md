@@ -10,10 +10,5 @@ The raw data is located in the folder “data”:
 -   `pregnancy_report.csv` (monthly pregnancy report from Jan 2018 to Oct 2021)
 -   `spiramycin.csv` (prescribed number of spiramycin doses per fiscal year from 2018 to 2021)
 
-The main scripts are located in the folder “main”:
-
-- :  `FoIEstimation.R` (estimation of FoIs and decay rate assuming SIS
-    catalytic model)
--   `MixtureModel.R` (estimation of the means and variances for the
-
-The scripts for the sensitivity analysis are located in the folder "sensitivity":
+The scripts for main analysis and the sensitivity analysis are located in the folder “main” and 
+"sensitivity", respectively.
