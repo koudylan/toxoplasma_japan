@@ -12,43 +12,8 @@ This is an R Markdown document on toxoplasmosis in Japan.
 ``` r
 rm(list=ls(all=TRUE))
 library(tidyverse)
-```
-
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.2     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
-``` r
 library(rstan)
-```
 
-    ## Loading required package: StanHeaders
-    ## 
-    ## rstan version 2.32.6 (Stan version 2.32.2)
-    ## 
-    ## For execution on a local, multicore CPU with excess RAM we recommend calling
-    ## options(mc.cores = parallel::detectCores()).
-    ## To avoid recompilation of unchanged Stan programs, we recommend calling
-    ## rstan_options(auto_write = TRUE)
-    ## For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
-    ## change `threads_per_chain` option:
-    ## rstan_options(threads_per_chain = 1)
-    ## 
-    ## 
-    ## Attaching package: 'rstan'
-    ## 
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-``` r
 preg <- read.csv("pregnancy_report.csv") # monthly pregnancy report from Jan 2018 to Oct 2021, corresponding to monthly pregnancy from Nov 2017 to Aug 2021
 offspr <- read.csv("offsprings.csv") # monthly offspring report from Jun 2022 to Dec 2022, corresponding to monthly pregnancy from  Sep 2021 to Mar 2022
 offspr2 <- read.csv("offsprings2.csv") # monthly offspring report from Apr 2018 to Jul 2018, corresponding to monthly pregnancy from Jul 2017 to Oct 2017
@@ -84,19 +49,17 @@ data <- list(T=57, K=9, Sus=df2, N=4, Dos=log(dose1), prop= c((0.468+0.478)/2, (
 stanmodel <- stan_model(file = 'toxo_20Jul24.stan') 
 ```
 
-    ## Trying to compile a simple C file
-
     ## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-    ## using C compiler: ‘Apple clang version 15.0.0 (clang-1500.0.40.1)’
-    ## using SDK: ‘MacOSX14.0.sdk’
+    ## using C compiler: ‘Apple clang version 17.0.0 (clang-1700.0.13.3)’
+    ## using SDK: ‘MacOSX15.4.sdk’
     ## clang -arch x86_64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppEigen/include/unsupported"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/BH/include" -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/StanHeaders/include/src/"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/StanHeaders/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppParallel/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/x86_64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
     ## In file included from <built-in>:1:
     ## In file included from /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
     ## In file included from /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppEigen/include/Eigen/Dense:1:
     ## In file included from /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppEigen/include/Eigen/Core:19:
     ## /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: 'cmath' file not found
-    ## #include <cmath>
-    ##          ^~~~~~~
+    ##   679 | #include <cmath>
+    ##       |          ^~~~~~~
     ## 1 error generated.
     ## make: *** [foo.o] Error 1
 
@@ -112,8 +75,8 @@ fit <- sampling(
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
     ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 0.000556 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 5.56 seconds.
+    ## Chain 1: Gradient evaluation took 0.000599 seconds
+    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 5.99 seconds.
     ## Chain 1: Adjust your expectations accordingly!
     ## Chain 1: 
     ## Chain 1: 
@@ -130,15 +93,15 @@ fit <- sampling(
     ## Chain 1: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 2.705 seconds (Warm-up)
-    ## Chain 1:                6.034 seconds (Sampling)
-    ## Chain 1:                8.739 seconds (Total)
+    ## Chain 1:  Elapsed Time: 2.764 seconds (Warm-up)
+    ## Chain 1:                6.07 seconds (Sampling)
+    ## Chain 1:                8.834 seconds (Total)
     ## Chain 1: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
     ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 0.000249 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.49 seconds.
+    ## Chain 2: Gradient evaluation took 0.000263 seconds
+    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.63 seconds.
     ## Chain 2: Adjust your expectations accordingly!
     ## Chain 2: 
     ## Chain 2: 
@@ -155,15 +118,15 @@ fit <- sampling(
     ## Chain 2: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 2.598 seconds (Warm-up)
-    ## Chain 2:                6.051 seconds (Sampling)
-    ## Chain 2:                8.649 seconds (Total)
+    ## Chain 2:  Elapsed Time: 2.641 seconds (Warm-up)
+    ## Chain 2:                6.053 seconds (Sampling)
+    ## Chain 2:                8.694 seconds (Total)
     ## Chain 2: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
     ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 0.000274 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.74 seconds.
+    ## Chain 3: Gradient evaluation took 0.000286 seconds
+    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.86 seconds.
     ## Chain 3: Adjust your expectations accordingly!
     ## Chain 3: 
     ## Chain 3: 
@@ -180,15 +143,15 @@ fit <- sampling(
     ## Chain 3: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 2.678 seconds (Warm-up)
-    ## Chain 3:                6.034 seconds (Sampling)
-    ## Chain 3:                8.712 seconds (Total)
+    ## Chain 3:  Elapsed Time: 2.742 seconds (Warm-up)
+    ## Chain 3:                6.075 seconds (Sampling)
+    ## Chain 3:                8.817 seconds (Total)
     ## Chain 3: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
     ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 0.000233 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.33 seconds.
+    ## Chain 4: Gradient evaluation took 0.000262 seconds
+    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.62 seconds.
     ## Chain 4: Adjust your expectations accordingly!
     ## Chain 4: 
     ## Chain 4: 
@@ -205,120 +168,10 @@ fit <- sampling(
     ## Chain 4: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 2.909 seconds (Warm-up)
-    ## Chain 4:                6.14 seconds (Sampling)
-    ## Chain 4:                9.049 seconds (Total)
+    ## Chain 4:  Elapsed Time: 2.977 seconds (Warm-up)
+    ## Chain 4:                6.193 seconds (Sampling)
+    ## Chain 4:                9.17 seconds (Total)
     ## Chain 4:
-
-    ## Warning in validityMethod(object): The following variables have undefined
-    ## values: inf_post[1,1],The following variables have undefined values:
-    ## inf_post[1,2],The following variables have undefined values: inf_post[1,3],The
-    ## following variables have undefined values: inf_post[1,4],The following
-    ## variables have undefined values: inf_post[1,5],The following variables have
-    ## undefined values: inf_post[1,6],The following variables have undefined values:
-    ## inf_post[1,7],The following variables have undefined values: inf_post[1,8],The
-    ## following variables have undefined values: inf_post[1,9],The following
-    ## variables have undefined values: all_inf[1,1],The following variables have
-    ## undefined values: all_inf[2,1],The following variables have undefined values:
-    ## all_inf[3,1],The following variables have undefined values: all_inf[4,1],The
-    ## following variables have undefined values: all_inf[5,1],The following variables
-    ## have undefined values: all_inf[6,1],The following variables have undefined
-    ## values: all_inf[7,1],The following variables have undefined values:
-    ## all_inf[8,1],The following variables have undefined values: all_inf[9,1],The
-    ## following variables have undefined values: all_inf[57,1],The following
-    ## variables have undefined values: all_inf[1,2],The following variables have
-    ## undefined values: all_inf[2,2],The following variables have undefined values:
-    ## all_inf[3,2],The following variables have undefined values: all_inf[4,2],The
-    ## following variables have undefined values: all_inf[5,2],The following variables
-    ## have undefined values: all_inf[6,2],The following variables have undefined
-    ## values: all_inf[7,2],The following variables have undefined values:
-    ## all_inf[8,2],The following variables have undefined values: all_inf[9,2],The
-    ## following variables have undefined values: all_inf[57,2],The following
-    ## variables have undefined values: all_inf[1,3],The following variables have
-    ## undefined values: all_inf[2,3],The following variables have undefined values:
-    ## all_inf[3,3],The following variables have undefined values: all_inf[4,3],The
-    ## following variables have undefined values: all_inf[5,3],The following variables
-    ## have undefined values: all_inf[6,3],The following variables have undefined
-    ## values: all_inf[7,3],The following variables have undefined values:
-    ## all_inf[8,3],The following variables have undefined values: all_inf[9,3],The
-    ## following variables have undefined values: all_inf[57,3],The following
-    ## variables have undefined values: all_inf[1,4],The following variables have
-    ## undefined values: all_inf[2,4],The following variables have undefined values:
-    ## all_inf[3,4],The following variables have undefined values: all_inf[4,4],The
-    ## following variables have undefined values: all_inf[5,4],The following variables
-    ## have undefined values: all_inf[6,4],The following variables have undefined
-    ## values: all_inf[7,4],The following variables have undefined values:
-    ## all_inf[8,4],The following variables have undefined values: all_inf[9,4],The
-    ## following variables have undefined values: all_inf[57,4],The following
-    ## variables have undefined values: all_inf[1,5],The following variables have
-    ## undefined values: all_inf[2,5],The following variables have undefined values:
-    ## all_inf[3,5],The following variables have undefined values: all_inf[4,5],The
-    ## following variables have undefined values: all_inf[5,5],The following variables
-    ## have undefined values: all_inf[6,5],The following variables have undefined
-    ## values: all_inf[7,5],The following variables have undefined values:
-    ## all_inf[8,5],The following variables have undefined values: all_inf[9,5],The
-    ## following variables have undefined values: all_inf[57,5],The following
-    ## variables have undefined values: all_inf[1,6],The following variables have
-    ## undefined values: all_inf[2,6],The following variables have undefined values:
-    ## all_inf[3,6],The following variables have undefined values: all_inf[4,6],The
-    ## following variables have undefined values: all_inf[5,6],The following variables
-    ## have undefined values: all_inf[6,6],The following variables have undefined
-    ## values: all_inf[7,6],The following variables have undefined values:
-    ## all_inf[8,6],The following variables have undefined values: all_inf[9,6],The
-    ## following variables have undefined values: all_inf[57,6],The following
-    ## variables have undefined values: all_inf[1,7],The following variables have
-    ## undefined values: all_inf[2,7],The following variables have undefined values:
-    ## all_inf[3,7],The following variables have undefined values: all_inf[4,7],The
-    ## following variables have undefined values: all_inf[5,7],The following variables
-    ## have undefined values: all_inf[6,7],The following variables have undefined
-    ## values: all_inf[7,7],The following variables have undefined values:
-    ## all_inf[8,7],The following variables have undefined values: all_inf[9,7],The
-    ## following variables have undefined values: all_inf[57,7],The following
-    ## variables have undefined values: all_inf[1,8],The following variables have
-    ## undefined values: all_inf[2,8],The following variables have undefined values:
-    ## all_inf[3,8],The following variables have undefined values: all_inf[4,8],The
-    ## following variables have undefined values: all_inf[5,8],The following variables
-    ## have undefined values: all_inf[6,8],The following variables have undefined
-    ## values: all_inf[7,8],The following variables have undefined values:
-    ## all_inf[8,8],The following variables have undefined values: all_inf[9,8],The
-    ## following variables have undefined values: all_inf[57,8],The following
-    ## variables have undefined values: all_inf[1,9],The following variables have
-    ## undefined values: all_inf[2,9],The following variables have undefined values:
-    ## all_inf[3,9],The following variables have undefined values: all_inf[4,9],The
-    ## following variables have undefined values: all_inf[5,9],The following variables
-    ## have undefined values: all_inf[6,9],The following variables have undefined
-    ## values: all_inf[7,9],The following variables have undefined values:
-    ## all_inf[8,9],The following variables have undefined values: all_inf[9,9],The
-    ## following variables have undefined values: all_inf[57,9],The following
-    ## variables have undefined values: inf_2m[1,1],The following variables have
-    ## undefined values: inf_2m[2,1],The following variables have undefined values:
-    ## inf_2m[1,2],The following variables have undefined values: inf_2m[2,2],The
-    ## following variables have undefined values: inf_2m[1,3],The following variables
-    ## have undefined values: inf_2m[2,3],The following variables have undefined
-    ## values: inf_2m[1,4],The following variables have undefined values:
-    ## inf_2m[2,4],The following variables have undefined values: inf_2m[1,5],The
-    ## following variables have undefined values: inf_2m[2,5],The following variables
-    ## have undefined values: inf_2m[1,6],The following variables have undefined
-    ## values: inf_2m[2,6],The following variables have undefined values:
-    ## inf_2m[1,7],The following variables have undefined values: inf_2m[2,7],The
-    ## following variables have undefined values: inf_2m[1,8],The following variables
-    ## have undefined values: inf_2m[2,8],The following variables have undefined
-    ## values: inf_2m[1,9],The following variables have undefined values:
-    ## inf_2m[2,9],The following variables have undefined values: inf_3m[1,1],The
-    ## following variables have undefined values: inf_3m[2,1],The following variables
-    ## have undefined values: inf_3m[3,1],The following variables have undefined
-    ## values: inf_3m[1,2],The following variables have undefined values:
-    ## inf_3m[2,2],The following variables have undefined values: inf_3m[3,2],The
-    ## following variables have undefined values: inf_3m[1,3],The following variables
-    ## have undefined values: inf_3m[2,3],The following variables have undefined
-    ## values: inf_3m[3,3],The following variables have undefined values:
-    ## inf_3m[1,4],The following variables have undefined values: inf_3m[2,4],The
-    ## following variables have undefined values: inf_3m[3,4],The following variables
-    ## have undefined values: inf_3m[1,5],The following variables have undefined
-    ## values: inf_3m[2,5],The following variables have undefined values:
-    ## inf_3m[3,5],The following variables have undefined values: inf_3m[1,6],The
-    ## following variables have undefined values: inf_3m[2,6],The following variables
-    ## have unde
 
 ``` r
 ms <- rstan::extract(fit)
@@ -336,8 +189,8 @@ fit2 <- sampling(
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
     ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 0.001441 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 14.41 seconds.
+    ## Chain 1: Gradient evaluation took 0.001332 seconds
+    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 13.32 seconds.
     ## Chain 1: Adjust your expectations accordingly!
     ## Chain 1: 
     ## Chain 1: 
@@ -354,15 +207,15 @@ fit2 <- sampling(
     ## Chain 1: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 2.736 seconds (Warm-up)
-    ## Chain 1:                6.266 seconds (Sampling)
-    ## Chain 1:                9.002 seconds (Total)
+    ## Chain 1:  Elapsed Time: 2.897 seconds (Warm-up)
+    ## Chain 1:                6.473 seconds (Sampling)
+    ## Chain 1:                9.37 seconds (Total)
     ## Chain 1: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
     ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 0.000228 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.28 seconds.
+    ## Chain 2: Gradient evaluation took 0.000242 seconds
+    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.42 seconds.
     ## Chain 2: Adjust your expectations accordingly!
     ## Chain 2: 
     ## Chain 2: 
@@ -379,15 +232,15 @@ fit2 <- sampling(
     ## Chain 2: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 2.736 seconds (Warm-up)
-    ## Chain 2:                6.018 seconds (Sampling)
-    ## Chain 2:                8.754 seconds (Total)
+    ## Chain 2:  Elapsed Time: 2.816 seconds (Warm-up)
+    ## Chain 2:                6.215 seconds (Sampling)
+    ## Chain 2:                9.031 seconds (Total)
     ## Chain 2: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
     ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 0.000268 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.68 seconds.
+    ## Chain 3: Gradient evaluation took 0.000266 seconds
+    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.66 seconds.
     ## Chain 3: Adjust your expectations accordingly!
     ## Chain 3: 
     ## Chain 3: 
@@ -404,15 +257,15 @@ fit2 <- sampling(
     ## Chain 3: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 2.755 seconds (Warm-up)
-    ## Chain 3:                5.893 seconds (Sampling)
-    ## Chain 3:                8.648 seconds (Total)
+    ## Chain 3:  Elapsed Time: 2.842 seconds (Warm-up)
+    ## Chain 3:                6.077 seconds (Sampling)
+    ## Chain 3:                8.919 seconds (Total)
     ## Chain 3: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
     ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 0.000293 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.93 seconds.
+    ## Chain 4: Gradient evaluation took 0.000244 seconds
+    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.44 seconds.
     ## Chain 4: Adjust your expectations accordingly!
     ## Chain 4: 
     ## Chain 4: 
@@ -429,120 +282,10 @@ fit2 <- sampling(
     ## Chain 4: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 2.764 seconds (Warm-up)
-    ## Chain 4:                5.591 seconds (Sampling)
-    ## Chain 4:                8.355 seconds (Total)
+    ## Chain 4:  Elapsed Time: 2.849 seconds (Warm-up)
+    ## Chain 4:                5.69 seconds (Sampling)
+    ## Chain 4:                8.539 seconds (Total)
     ## Chain 4:
-
-    ## Warning in validityMethod(object): The following variables have undefined
-    ## values: inf_post[1,1],The following variables have undefined values:
-    ## inf_post[1,2],The following variables have undefined values: inf_post[1,3],The
-    ## following variables have undefined values: inf_post[1,4],The following
-    ## variables have undefined values: inf_post[1,5],The following variables have
-    ## undefined values: inf_post[1,6],The following variables have undefined values:
-    ## inf_post[1,7],The following variables have undefined values: inf_post[1,8],The
-    ## following variables have undefined values: inf_post[1,9],The following
-    ## variables have undefined values: all_inf[1,1],The following variables have
-    ## undefined values: all_inf[2,1],The following variables have undefined values:
-    ## all_inf[3,1],The following variables have undefined values: all_inf[4,1],The
-    ## following variables have undefined values: all_inf[5,1],The following variables
-    ## have undefined values: all_inf[6,1],The following variables have undefined
-    ## values: all_inf[7,1],The following variables have undefined values:
-    ## all_inf[8,1],The following variables have undefined values: all_inf[9,1],The
-    ## following variables have undefined values: all_inf[57,1],The following
-    ## variables have undefined values: all_inf[1,2],The following variables have
-    ## undefined values: all_inf[2,2],The following variables have undefined values:
-    ## all_inf[3,2],The following variables have undefined values: all_inf[4,2],The
-    ## following variables have undefined values: all_inf[5,2],The following variables
-    ## have undefined values: all_inf[6,2],The following variables have undefined
-    ## values: all_inf[7,2],The following variables have undefined values:
-    ## all_inf[8,2],The following variables have undefined values: all_inf[9,2],The
-    ## following variables have undefined values: all_inf[57,2],The following
-    ## variables have undefined values: all_inf[1,3],The following variables have
-    ## undefined values: all_inf[2,3],The following variables have undefined values:
-    ## all_inf[3,3],The following variables have undefined values: all_inf[4,3],The
-    ## following variables have undefined values: all_inf[5,3],The following variables
-    ## have undefined values: all_inf[6,3],The following variables have undefined
-    ## values: all_inf[7,3],The following variables have undefined values:
-    ## all_inf[8,3],The following variables have undefined values: all_inf[9,3],The
-    ## following variables have undefined values: all_inf[57,3],The following
-    ## variables have undefined values: all_inf[1,4],The following variables have
-    ## undefined values: all_inf[2,4],The following variables have undefined values:
-    ## all_inf[3,4],The following variables have undefined values: all_inf[4,4],The
-    ## following variables have undefined values: all_inf[5,4],The following variables
-    ## have undefined values: all_inf[6,4],The following variables have undefined
-    ## values: all_inf[7,4],The following variables have undefined values:
-    ## all_inf[8,4],The following variables have undefined values: all_inf[9,4],The
-    ## following variables have undefined values: all_inf[57,4],The following
-    ## variables have undefined values: all_inf[1,5],The following variables have
-    ## undefined values: all_inf[2,5],The following variables have undefined values:
-    ## all_inf[3,5],The following variables have undefined values: all_inf[4,5],The
-    ## following variables have undefined values: all_inf[5,5],The following variables
-    ## have undefined values: all_inf[6,5],The following variables have undefined
-    ## values: all_inf[7,5],The following variables have undefined values:
-    ## all_inf[8,5],The following variables have undefined values: all_inf[9,5],The
-    ## following variables have undefined values: all_inf[57,5],The following
-    ## variables have undefined values: all_inf[1,6],The following variables have
-    ## undefined values: all_inf[2,6],The following variables have undefined values:
-    ## all_inf[3,6],The following variables have undefined values: all_inf[4,6],The
-    ## following variables have undefined values: all_inf[5,6],The following variables
-    ## have undefined values: all_inf[6,6],The following variables have undefined
-    ## values: all_inf[7,6],The following variables have undefined values:
-    ## all_inf[8,6],The following variables have undefined values: all_inf[9,6],The
-    ## following variables have undefined values: all_inf[57,6],The following
-    ## variables have undefined values: all_inf[1,7],The following variables have
-    ## undefined values: all_inf[2,7],The following variables have undefined values:
-    ## all_inf[3,7],The following variables have undefined values: all_inf[4,7],The
-    ## following variables have undefined values: all_inf[5,7],The following variables
-    ## have undefined values: all_inf[6,7],The following variables have undefined
-    ## values: all_inf[7,7],The following variables have undefined values:
-    ## all_inf[8,7],The following variables have undefined values: all_inf[9,7],The
-    ## following variables have undefined values: all_inf[57,7],The following
-    ## variables have undefined values: all_inf[1,8],The following variables have
-    ## undefined values: all_inf[2,8],The following variables have undefined values:
-    ## all_inf[3,8],The following variables have undefined values: all_inf[4,8],The
-    ## following variables have undefined values: all_inf[5,8],The following variables
-    ## have undefined values: all_inf[6,8],The following variables have undefined
-    ## values: all_inf[7,8],The following variables have undefined values:
-    ## all_inf[8,8],The following variables have undefined values: all_inf[9,8],The
-    ## following variables have undefined values: all_inf[57,8],The following
-    ## variables have undefined values: all_inf[1,9],The following variables have
-    ## undefined values: all_inf[2,9],The following variables have undefined values:
-    ## all_inf[3,9],The following variables have undefined values: all_inf[4,9],The
-    ## following variables have undefined values: all_inf[5,9],The following variables
-    ## have undefined values: all_inf[6,9],The following variables have undefined
-    ## values: all_inf[7,9],The following variables have undefined values:
-    ## all_inf[8,9],The following variables have undefined values: all_inf[9,9],The
-    ## following variables have undefined values: all_inf[57,9],The following
-    ## variables have undefined values: inf_2m[1,1],The following variables have
-    ## undefined values: inf_2m[2,1],The following variables have undefined values:
-    ## inf_2m[1,2],The following variables have undefined values: inf_2m[2,2],The
-    ## following variables have undefined values: inf_2m[1,3],The following variables
-    ## have undefined values: inf_2m[2,3],The following variables have undefined
-    ## values: inf_2m[1,4],The following variables have undefined values:
-    ## inf_2m[2,4],The following variables have undefined values: inf_2m[1,5],The
-    ## following variables have undefined values: inf_2m[2,5],The following variables
-    ## have undefined values: inf_2m[1,6],The following variables have undefined
-    ## values: inf_2m[2,6],The following variables have undefined values:
-    ## inf_2m[1,7],The following variables have undefined values: inf_2m[2,7],The
-    ## following variables have undefined values: inf_2m[1,8],The following variables
-    ## have undefined values: inf_2m[2,8],The following variables have undefined
-    ## values: inf_2m[1,9],The following variables have undefined values:
-    ## inf_2m[2,9],The following variables have undefined values: inf_3m[1,1],The
-    ## following variables have undefined values: inf_3m[2,1],The following variables
-    ## have undefined values: inf_3m[3,1],The following variables have undefined
-    ## values: inf_3m[1,2],The following variables have undefined values:
-    ## inf_3m[2,2],The following variables have undefined values: inf_3m[3,2],The
-    ## following variables have undefined values: inf_3m[1,3],The following variables
-    ## have undefined values: inf_3m[2,3],The following variables have undefined
-    ## values: inf_3m[3,3],The following variables have undefined values:
-    ## inf_3m[1,4],The following variables have undefined values: inf_3m[2,4],The
-    ## following variables have undefined values: inf_3m[3,4],The following variables
-    ## have undefined values: inf_3m[1,5],The following variables have undefined
-    ## values: inf_3m[2,5],The following variables have undefined values:
-    ## inf_3m[3,5],The following variables have undefined values: inf_3m[1,6],The
-    ## following variables have undefined values: inf_3m[2,6],The following variables
-    ## have unde
 
 ``` r
 ms2 <- rstan::extract(fit2)
@@ -560,8 +303,8 @@ fit3 <- sampling(
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
     ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 0.00106 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10.6 seconds.
+    ## Chain 1: Gradient evaluation took 0.001189 seconds
+    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 11.89 seconds.
     ## Chain 1: Adjust your expectations accordingly!
     ## Chain 1: 
     ## Chain 1: 
@@ -578,15 +321,15 @@ fit3 <- sampling(
     ## Chain 1: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 2.879 seconds (Warm-up)
-    ## Chain 1:                5.872 seconds (Sampling)
-    ## Chain 1:                8.751 seconds (Total)
+    ## Chain 1:  Elapsed Time: 2.794 seconds (Warm-up)
+    ## Chain 1:                6.03 seconds (Sampling)
+    ## Chain 1:                8.824 seconds (Total)
     ## Chain 1: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
     ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 0.000229 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.29 seconds.
+    ## Chain 2: Gradient evaluation took 0.000225 seconds
+    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 2.25 seconds.
     ## Chain 2: Adjust your expectations accordingly!
     ## Chain 2: 
     ## Chain 2: 
@@ -603,15 +346,15 @@ fit3 <- sampling(
     ## Chain 2: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 2.802 seconds (Warm-up)
-    ## Chain 2:                6.091 seconds (Sampling)
-    ## Chain 2:                8.893 seconds (Total)
+    ## Chain 2:  Elapsed Time: 2.859 seconds (Warm-up)
+    ## Chain 2:                6.563 seconds (Sampling)
+    ## Chain 2:                9.422 seconds (Total)
     ## Chain 2: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
     ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 0.000256 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.56 seconds.
+    ## Chain 3: Gradient evaluation took 0.000229 seconds
+    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.29 seconds.
     ## Chain 3: Adjust your expectations accordingly!
     ## Chain 3: 
     ## Chain 3: 
@@ -628,15 +371,15 @@ fit3 <- sampling(
     ## Chain 3: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 2.923 seconds (Warm-up)
-    ## Chain 3:                6.066 seconds (Sampling)
-    ## Chain 3:                8.989 seconds (Total)
+    ## Chain 3:  Elapsed Time: 3.025 seconds (Warm-up)
+    ## Chain 3:                6.377 seconds (Sampling)
+    ## Chain 3:                9.402 seconds (Total)
     ## Chain 3: 
     ## 
     ## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
     ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 0.000246 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.46 seconds.
+    ## Chain 4: Gradient evaluation took 0.000229 seconds
+    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.29 seconds.
     ## Chain 4: Adjust your expectations accordingly!
     ## Chain 4: 
     ## Chain 4: 
@@ -653,120 +396,10 @@ fit3 <- sampling(
     ## Chain 4: Iteration: 1900 / 2000 [ 95%]  (Sampling)
     ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
     ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 2.583 seconds (Warm-up)
-    ## Chain 4:                6.016 seconds (Sampling)
-    ## Chain 4:                8.599 seconds (Total)
+    ## Chain 4:  Elapsed Time: 2.768 seconds (Warm-up)
+    ## Chain 4:                6.618 seconds (Sampling)
+    ## Chain 4:                9.386 seconds (Total)
     ## Chain 4:
-
-    ## Warning in validityMethod(object): The following variables have undefined
-    ## values: inf_post[1,1],The following variables have undefined values:
-    ## inf_post[1,2],The following variables have undefined values: inf_post[1,3],The
-    ## following variables have undefined values: inf_post[1,4],The following
-    ## variables have undefined values: inf_post[1,5],The following variables have
-    ## undefined values: inf_post[1,6],The following variables have undefined values:
-    ## inf_post[1,7],The following variables have undefined values: inf_post[1,8],The
-    ## following variables have undefined values: inf_post[1,9],The following
-    ## variables have undefined values: all_inf[1,1],The following variables have
-    ## undefined values: all_inf[2,1],The following variables have undefined values:
-    ## all_inf[3,1],The following variables have undefined values: all_inf[4,1],The
-    ## following variables have undefined values: all_inf[5,1],The following variables
-    ## have undefined values: all_inf[6,1],The following variables have undefined
-    ## values: all_inf[7,1],The following variables have undefined values:
-    ## all_inf[8,1],The following variables have undefined values: all_inf[9,1],The
-    ## following variables have undefined values: all_inf[57,1],The following
-    ## variables have undefined values: all_inf[1,2],The following variables have
-    ## undefined values: all_inf[2,2],The following variables have undefined values:
-    ## all_inf[3,2],The following variables have undefined values: all_inf[4,2],The
-    ## following variables have undefined values: all_inf[5,2],The following variables
-    ## have undefined values: all_inf[6,2],The following variables have undefined
-    ## values: all_inf[7,2],The following variables have undefined values:
-    ## all_inf[8,2],The following variables have undefined values: all_inf[9,2],The
-    ## following variables have undefined values: all_inf[57,2],The following
-    ## variables have undefined values: all_inf[1,3],The following variables have
-    ## undefined values: all_inf[2,3],The following variables have undefined values:
-    ## all_inf[3,3],The following variables have undefined values: all_inf[4,3],The
-    ## following variables have undefined values: all_inf[5,3],The following variables
-    ## have undefined values: all_inf[6,3],The following variables have undefined
-    ## values: all_inf[7,3],The following variables have undefined values:
-    ## all_inf[8,3],The following variables have undefined values: all_inf[9,3],The
-    ## following variables have undefined values: all_inf[57,3],The following
-    ## variables have undefined values: all_inf[1,4],The following variables have
-    ## undefined values: all_inf[2,4],The following variables have undefined values:
-    ## all_inf[3,4],The following variables have undefined values: all_inf[4,4],The
-    ## following variables have undefined values: all_inf[5,4],The following variables
-    ## have undefined values: all_inf[6,4],The following variables have undefined
-    ## values: all_inf[7,4],The following variables have undefined values:
-    ## all_inf[8,4],The following variables have undefined values: all_inf[9,4],The
-    ## following variables have undefined values: all_inf[57,4],The following
-    ## variables have undefined values: all_inf[1,5],The following variables have
-    ## undefined values: all_inf[2,5],The following variables have undefined values:
-    ## all_inf[3,5],The following variables have undefined values: all_inf[4,5],The
-    ## following variables have undefined values: all_inf[5,5],The following variables
-    ## have undefined values: all_inf[6,5],The following variables have undefined
-    ## values: all_inf[7,5],The following variables have undefined values:
-    ## all_inf[8,5],The following variables have undefined values: all_inf[9,5],The
-    ## following variables have undefined values: all_inf[57,5],The following
-    ## variables have undefined values: all_inf[1,6],The following variables have
-    ## undefined values: all_inf[2,6],The following variables have undefined values:
-    ## all_inf[3,6],The following variables have undefined values: all_inf[4,6],The
-    ## following variables have undefined values: all_inf[5,6],The following variables
-    ## have undefined values: all_inf[6,6],The following variables have undefined
-    ## values: all_inf[7,6],The following variables have undefined values:
-    ## all_inf[8,6],The following variables have undefined values: all_inf[9,6],The
-    ## following variables have undefined values: all_inf[57,6],The following
-    ## variables have undefined values: all_inf[1,7],The following variables have
-    ## undefined values: all_inf[2,7],The following variables have undefined values:
-    ## all_inf[3,7],The following variables have undefined values: all_inf[4,7],The
-    ## following variables have undefined values: all_inf[5,7],The following variables
-    ## have undefined values: all_inf[6,7],The following variables have undefined
-    ## values: all_inf[7,7],The following variables have undefined values:
-    ## all_inf[8,7],The following variables have undefined values: all_inf[9,7],The
-    ## following variables have undefined values: all_inf[57,7],The following
-    ## variables have undefined values: all_inf[1,8],The following variables have
-    ## undefined values: all_inf[2,8],The following variables have undefined values:
-    ## all_inf[3,8],The following variables have undefined values: all_inf[4,8],The
-    ## following variables have undefined values: all_inf[5,8],The following variables
-    ## have undefined values: all_inf[6,8],The following variables have undefined
-    ## values: all_inf[7,8],The following variables have undefined values:
-    ## all_inf[8,8],The following variables have undefined values: all_inf[9,8],The
-    ## following variables have undefined values: all_inf[57,8],The following
-    ## variables have undefined values: all_inf[1,9],The following variables have
-    ## undefined values: all_inf[2,9],The following variables have undefined values:
-    ## all_inf[3,9],The following variables have undefined values: all_inf[4,9],The
-    ## following variables have undefined values: all_inf[5,9],The following variables
-    ## have undefined values: all_inf[6,9],The following variables have undefined
-    ## values: all_inf[7,9],The following variables have undefined values:
-    ## all_inf[8,9],The following variables have undefined values: all_inf[9,9],The
-    ## following variables have undefined values: all_inf[57,9],The following
-    ## variables have undefined values: inf_2m[1,1],The following variables have
-    ## undefined values: inf_2m[2,1],The following variables have undefined values:
-    ## inf_2m[1,2],The following variables have undefined values: inf_2m[2,2],The
-    ## following variables have undefined values: inf_2m[1,3],The following variables
-    ## have undefined values: inf_2m[2,3],The following variables have undefined
-    ## values: inf_2m[1,4],The following variables have undefined values:
-    ## inf_2m[2,4],The following variables have undefined values: inf_2m[1,5],The
-    ## following variables have undefined values: inf_2m[2,5],The following variables
-    ## have undefined values: inf_2m[1,6],The following variables have undefined
-    ## values: inf_2m[2,6],The following variables have undefined values:
-    ## inf_2m[1,7],The following variables have undefined values: inf_2m[2,7],The
-    ## following variables have undefined values: inf_2m[1,8],The following variables
-    ## have undefined values: inf_2m[2,8],The following variables have undefined
-    ## values: inf_2m[1,9],The following variables have undefined values:
-    ## inf_2m[2,9],The following variables have undefined values: inf_3m[1,1],The
-    ## following variables have undefined values: inf_3m[2,1],The following variables
-    ## have undefined values: inf_3m[3,1],The following variables have undefined
-    ## values: inf_3m[1,2],The following variables have undefined values:
-    ## inf_3m[2,2],The following variables have undefined values: inf_3m[3,2],The
-    ## following variables have undefined values: inf_3m[1,3],The following variables
-    ## have undefined values: inf_3m[2,3],The following variables have undefined
-    ## values: inf_3m[3,3],The following variables have undefined values:
-    ## inf_3m[1,4],The following variables have undefined values: inf_3m[2,4],The
-    ## following variables have undefined values: inf_3m[3,4],The following variables
-    ## have undefined values: inf_3m[1,5],The following variables have undefined
-    ## values: inf_3m[2,5],The following variables have undefined values:
-    ## inf_3m[3,5],The following variables have undefined values: inf_3m[1,6],The
-    ## following variables have undefined values: inf_3m[2,6],The following variables
-    ## have unde
 
 ``` r
 ms3 <- rstan::extract(fit3)
@@ -1306,20 +939,8 @@ p1<- ggplot()+
   labs(x= "Prefecture", y = "Doses")+
   guides(colour=FALSE)+
   guides(shape=FALSE)
-```
-
-    ## Warning: The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
-    ## of ggplot2 3.3.4.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-``` r
 p1
 ```
-
-    ## Warning: No shared levels found between `names(values)` of the manual scale and the
-    ## data's fill values.
 
 ![](toxoplasma_files/figure-gfm/plot%20for%20figure1-1.png)<!-- -->
 
