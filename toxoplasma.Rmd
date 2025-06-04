@@ -11,7 +11,7 @@ This is an R Markdown document on toxoplasmosis in Japan.
 
 ## Data processing
 
-```{r data loading}
+```{r data loading, message=FALSE, warning=FALSE, error=FALSE}
 rm(list=ls(all=TRUE))
 library(tidyverse)
 library(rstan)
@@ -45,7 +45,7 @@ dose1 <- subset(dose1, select = -c(X, Yamaguchi))
 
 ## run stan modeling
 
-```{r fitting to data}
+```{r fitting to data, message=FALSE, warning=FALSE, error=FALSE}
 
 data <- list(T=57, K=9, Sus=df2, N=4, Dos=log(dose1), prop= c((0.468+0.478)/2, (0.828+0.822)/2, (0.516+0.483)/2, (0.555+0.755)/2, (0.539+0.550)/2, (0.33+0.292)/2, (0.623+0.689)/2, (0.603+0.644)/2, (0.644+0.729)/2)) # using average of testing rates in 2019 and 2021; excluding Yamaguchi
 
@@ -85,7 +85,7 @@ ms3 <- rstan::extract(fit3)
 
 ## Statistics for parameters
 
-```{r main statistics for estimated parameters}
+```{r main statistics for estimated parameters, , message=FALSE, warning=FALSE, error=FALSE}
 # Create a function to calculate the desired quantile
 calculate_quantiles <- function(column) {
   quantile(column, probs = c(0.025, 0.5, 0.975))
@@ -141,7 +141,7 @@ quantile(ms3$sigma, probs = c(0.025, 0.5, 0.975))
 
 ## Figure 1 (observed and estimated doses)
 
-```{r plot for figure1}
+```{r plot for figure1, message=FALSE, warning=FALSE, error=FALSE}
 ## df for doses
 dose2 <- read.csv("spiramycin.csv")
 dose2 <- subset(dose2, select = -c(Yamaguchi))
@@ -268,7 +268,7 @@ p1
 
 ## Figure 2 (cumulative incidence in pregnant women)
 
-```{r plot for figure 2}
+```{r plot for figure 2, message=FALSE, warning=FALSE, error=FALSE}
 
 # all
 i2019 <- quantile(x=ms$infected_2019[,1], probs = c(0.025, 0.5, 0.975))
@@ -484,7 +484,7 @@ p2+p3
 
 ## Treated proportion
 
-```{r}
+```{r,message=FALSE, warning=FALSE, error=FALSE}
 ## df for treated proportion (Base)
 # all
 t2019 <- quantile(x=ms$treated_2019[,1], probs = c(0.025, 0.5, 0.975))
@@ -579,7 +579,7 @@ to2021 <- quantile(x=ms3$treated_2021[,1], probs = c(0.025, 0.5, 0.975))
 
 ## Figure 3 (cumulative CT)
 
-```{r plot for figure 3}
+```{r plot for figure 3, message=FALSE, warning=FALSE, error=FALSE}
 # df for vertical
 # all
 v2019 <- quantile(x=ms$vertical_2019[,1], probs = c(0.025, 0.5, 0.975))
